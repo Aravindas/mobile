@@ -1,74 +1,211 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useEffect, useState } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  FlatList, 
+  RefreshControl,
+  TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
+  Alert
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { Plus, Search } from 'lucide-react-native';
+import { usePostsStore } from '@/store/posts-store';
+import { useAuthStore } from '@/store/auth-store';
+import PostCard from '@/components/PostCard';
+import colors from '@/constants/colors';
 
 export default function HomeScreen() {
+  const { posts, isLoading, error, fetchPosts, likePost, clearError } = usePostsStore();
+  const { user } = useAuthStore();
+  const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
+  
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+  
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error', error, [
+        { text: 'OK', onPress: clearError }
+      ]);
+    }
+  }, [error]);
+  
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchPosts();
+    setRefreshing(false);
+  };
+  
+  const handleLike = (postId: string) => {
+    likePost(postId);
+  };
+  
+  const handleComment = (postId: string) => {
+    router.push(`/post/${postId}`);
+  };
+  
+  const handleShare = (postId: string) => {
+    Alert.alert('Share', 'Sharing functionality would be implemented here.');
+  };
+  
+  const handleProfilePress = (userId: string) => {
+    router.push(`/profile/${userId}`);
+  };
+  
+  const handlePostPress = (postId: string) => {
+    router.push(`/post/${postId}`);
+  };
+  
+  const handleCreatePost = () => {
+    router.push('/create-post');
+  };
+  
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <Text style={styles.greeting}>
+        Welcome, {user?.full_name?.split(' ')[0] || 'User'}
+      </Text>
+      <TouchableOpacity style={styles.searchButton}>
+        <Search size={20} color={colors.text.secondary} />
+        <Text style={styles.searchText}>Search</Text>
+      </TouchableOpacity>
+    </View>
+  );
+  
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <PostCard
+            post={item}
+            onLike={handleLike}
+            onComment={handleComment}
+            onShare={handleShare}
+            onProfilePress={handleProfilePress}
+            onPostPress={handlePostPress}
+          />
+        )}
+        ListHeaderComponent={renderHeader}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
+        ListEmptyComponent={
+          !isLoading ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No posts yet</Text>
+              <TouchableOpacity 
+                style={styles.emptyButton}
+                onPress={handleCreatePost}
+              >
+                <Text style={styles.emptyButtonText}>Create your first post</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null
+        }
+      />
+      
+      {isLoading && !refreshing && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      )}
+      
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={handleCreatePost}
+        activeOpacity={0.8}
+      >
+        <Plus size={24} color={colors.white} />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 80,
+  },
+  header: {
+    marginVertical: 16,
+  },
+  greeting: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text.primary,
+    marginBottom: 16,
+  },
+  searchButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    padding: 12,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  searchText: {
+    marginLeft: 8,
+    color: colors.text.secondary,
+    fontSize: 16,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: colors.text.secondary,
+    marginBottom: 16,
+  },
+  emptyButton: {
+    padding: 12,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+  },
+  emptyButtonText: {
+    color: colors.white,
+    fontWeight: '600',
+  },
+  fab: {
     position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });

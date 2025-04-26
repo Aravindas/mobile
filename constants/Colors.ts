@@ -1,26 +1,23 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+export const colors = {
+  primary: '#0A66C2', // LinkedIn blue
+  secondary: '#057642', // Professional green
+  background: '#F3F2EF', // Light gray background
+  white: '#FFFFFF',
+  text: {
+    primary: '#191919',
+    secondary: '#666666',
+    tertiary: '#86888A',
   },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+  border: '#E0E0E0',
+  error: '#D11124',
+  success: '#057642',
+  notification: '#E7A33E',
+  divider: '#EBEBEB',
+  cardBackground: '#FFFFFF',
+  buttonText: '#FFFFFF',
+  inputBackground: '#F5F5F5',
+  placeholder: '#86888A',
+  link: '#0A66C2',
 };
+
+export default colors;
