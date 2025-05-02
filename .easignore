@@ -1,0 +1,15 @@
+# .easignore
+node_modules/
+.expo/
+npm-debug.log
+yarn-error.log
+metro-cache/
+coverage/
+dist/
+assets/raw/
+*.DS_Store
+*.log
+*.tmp
+*.bak
+*.zip
+.env
