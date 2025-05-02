@@ -2,7 +2,7 @@
   "expo": {
     "name": "web",
     "slug": "web-1",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -36,7 +36,7 @@
       }
     },
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "1.0.0"
     },
     "updates": {
       "url": "https://u.expo.dev/7b77e82b-ddb5-4b9b-94a9-dadfbca4d9e7"
