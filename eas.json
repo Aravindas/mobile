@@ -12,6 +12,9 @@
       "android": {
         "buildType": "apk"
       },
+      "cache": {
+        "key": "preview-cache"
+      },
       "distribution": "internal",
       "channel": "preview"
     },

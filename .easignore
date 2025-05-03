@@ -1,18 +1,28 @@
-# .easignore
-node_modules/
-.expo/
+# Node & Logs
+node_modules
 npm-debug.log
 yarn-error.log
-metro-cache/
-coverage/
-dist/
-assets/raw/
-*.DS_Store
-*.log
-*.tmp
-*.bak
-*.zip
+pnpm-lock.yaml
+
+# System & Editor
+.DS_Store
+.vscode
+.idea
+
+# Git
+.git
+.gitignore
+
+# Expo
+.expo
+.expo-shared
+*.expo
+
+# Misc
 .env
-/android
-/ios
-/node_modules
+*.log
+*.keystore
+*.jks
+coverage
+dist
+build
