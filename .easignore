@@ -1,5 +1,5 @@
 # Node & Logs
-node_modules
+/node_modules
 npm-debug.log
 yarn-error.log
 pnpm-lock.yaml
@@ -26,5 +26,5 @@ pnpm-lock.yaml
 coverage
 dist
 build
-android' 
-ios'
+/android' 
+/ios'
