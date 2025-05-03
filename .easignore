@@ -15,3 +15,4 @@ assets/raw/
 .env
 /android
 /ios
+/node_modules
